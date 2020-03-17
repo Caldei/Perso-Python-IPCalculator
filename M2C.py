@@ -7,20 +7,24 @@ Date : March 2020
 Context : Personal
 """
 
-# Import
+# --- --- --- Imports --- --- --- #
 import re
 
-# Loop
+# --- --- --- Constant --- --- --- #
+IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
+
+# --- --- --- Loop --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is Mask to CIDR convertor !")
 
-    # Input
+    # --- --- --- Inputs --- --- --- #
+    # lDecMask
     vDecMask = True
     while vDecMask:
         sDecMask = input("Enter a Mask : ")
         print("")
-        if bool(re.match("^([0-9]{1,3}\.){3}[0-9]{1,3}$", sDecMask)):
+        if bool(re.match(IP_MASK_REGEX, sDecMask)):
             lDecMask = sDecMask.split('.')
             check = False
             for i in range(4):
@@ -39,14 +43,16 @@ while loop != "exit":
             vDecMask = True
             print("Warning : This is not a valid Mask.")
 
-    # Wildcard Mask String
+    # --- --- --- Wildcard Mask --- --- --- #
+    # sDecWMask
     sDecWMask = ""
     for i in range(3):
         sDecWMask = sDecWMask + str(255 - int(lDecMask[i]))
         sDecWMask = sDecWMask + '.'
     sDecWMask = sDecWMask + str(255 - int(lDecMask[i+1]))
 
-    # Bianary Mask string
+    # --- --- --- Bianary Mask --- --- --- #
+    # sBinMask
     sBinMask = ""
     for i in range(3):
         if lDecMask[i] != '0':
@@ -60,20 +66,21 @@ while loop != "exit":
     else:
         sBinMask = sBinMask + "00000000"
 
-    # CIDR
+    # --- --- --- CIDR --- --- --- #
+    # sCIDR
     lDecMask = list(sBinMask)
-    dCIDR = 0
+    iCIDR = 0
     for i in range(len(lDecMask)):
         if lDecMask[i] == '1':
-            dCIDR = dCIDR + 1
-    sCIDR = "/" + str(dCIDR)
+            iCIDR = iCIDR + 1
+    sCIDR = "/" + str(iCIDR)
 
-    # Output
+    # --- --- --- Outputs --- --- --- #
     print("Wildcard Mask : " + sDecWMask)
     print("Binary Mask : " + sBinMask)
     print("CIDR : " + sCIDR)
     print("")
 
-    # Exit or Continue
-    print("If you want to quit enter \"exit\" else press Enter")
-    loop = input()
+    # --- --- --- Exit or Continue --- --- --- #
+    loop = input("If you want to quit enter \"exit\" else press Enter : ")
+    print()

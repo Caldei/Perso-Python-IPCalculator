@@ -7,63 +7,58 @@ Date : March 2020
 Context : Personal
 """
 
-# Loop
+# --- --- --- Loop --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is CIDR to Mask convertor !")
 
-    # Input
+    # --- --- --- Inputs --- --- --- #
+    # iCIDR
     vCIDR = True
     while vCIDR:
         sCIDR = input("Enter a CIDR (just the number): ")
         print("")
         try:
-            dCIDR = int(sCIDR)
+            iCIDR = int(sCIDR)
         except:
-            dCIDR = -1
-        if dCIDR < 0 or dCIDR > 32:
+            iCIDR = -1
+        if iCIDR < 0 or iCIDR > 32:
             vCIDR = True
             print("Warning : CIDR must be a number between 0 and 32.")
         else:
             vCIDR = False
 
-    # Bianary Mask list
+    # --- --- --- Mask and WildCard Mask --- --- --- #
+    # lBinMask
     lBinMask = []
     for i in range(32):
-        if i < dCIDR:
+        if i < iCIDR:
             if i % 8 == 0 and i != 0:
                 lBinMask.append('.')
-            lBinMask.append(1)
+            lBinMask.append('1')
         else:
             if i % 8 == 0 and i != 0:
                 lBinMask.append('.')
-            lBinMask.append(0)
+            lBinMask.append('0')
 
-    # Bianary Mask string
+    # sBinMask
     sBinMask = ""
     for i in range(35):
         sBinMask = sBinMask + str(lBinMask[i])
 
-    # Bianary Mask string (Other Method)
-    #sBinMask = str(lBinMask)
-    #sBinMask = sBinMask.replace('[', '')
-    #sBinMask = sBinMask.replace(']', '')
-    #sBinMask = sBinMask.replace(',', '')
-    #sBinMask = sBinMask.replace(' ', '')
-    #sBinMask = sBinMask.replace('\'', '')
-
-    # Decimal Mask and WildCard Mask strings
+    # sDecMask
+    # sDecWMask
     sDecMask = ""
     sDecWMask = ""
     octet = 0
     wOctet = 0
     p = 7
     for i in range(35):
-        if lBinMask[i] == 1:
+        if lBinMask[i] == '1':
             octet = octet + 2**p
             wOctet = wOctet + 0
             p = p - 1
-        elif lBinMask[i] == 0:
+        elif lBinMask[i] == '0':
             octet = octet + 0
             wOctet = wOctet + 2**p
             p = p - 1
@@ -77,12 +72,12 @@ while loop != "exit":
             wOctet = 0
             p = 7
 
-    # Outpout
+    # --- --- --- Outputs --- --- --- #
     print("Binary Mask :  " + sBinMask)
     print("Decimal Mask : " + sDecMask)
     print("Wildcard Mask : " + sDecWMask)
     print("")
 
-    # Exit or Continue
-    print("If you want to quit enter \"exit\" else press Enter")
-    loop = input()
+    # --- --- --- Exit or Continue --- --- --- #
+    loop = input("If you want to quit enter \"exit\" else press Enter : ")
+    print()
