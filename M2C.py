@@ -20,8 +20,8 @@ while loop != "exit":
 
     # --- --- --- Inputs --- --- --- #
     # lDecMask
-    vDecMask = True
-    while vDecMask:
+    vMask = True
+    while vMask:
         sDecMask = input("Enter a Mask : ")
         print("")
         if bool(re.match(IP_MASK_REGEX, sDecMask)):
@@ -36,11 +36,11 @@ while loop != "exit":
                     print(
                         "Warning : This is not a valid Mask all bits must be left contiguous.")
             if check:
-                vDecMask = True
+                vMask = True
             else:
-                vDecMask = False
+                vMask = False
         else:
-            vDecMask = True
+            vMask = True
             print("Warning : This is not a valid Mask.")
 
     # --- --- --- Wildcard Mask --- --- --- #
