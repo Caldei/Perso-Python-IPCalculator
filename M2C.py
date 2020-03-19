@@ -7,11 +7,14 @@ Date : March 2020
 Context : Personal
 """
 
+
 # --- --- --- Imports --- --- --- #
 import re
 
+
 # --- --- --- Constant --- --- --- #
 IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
+
 
 # --- --- --- Loop --- --- --- #
 loop = ""

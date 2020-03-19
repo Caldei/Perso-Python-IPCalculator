@@ -100,7 +100,7 @@ while loop != "exit":
             if lBinMask[i] == '1':
                 iCIDR = iCIDR + 1
 
-    # Nbr of IPs
+    # nbIP
     nbIP = str(2**(32-iCIDR))
     if nbIP == '1':
         nbUsable = '1'
@@ -173,7 +173,6 @@ while loop != "exit":
         if p < 0:
             sDecRes = sDecRes + str(octet)
             octet = 0
-            wOctet = 0
             p = 7
 
     # sDecBroad
@@ -192,12 +191,8 @@ while loop != "exit":
         if p < 0:
             sDecBroad = sDecBroad + str(octet)
             octet = 0
-            wOctet = 0
             p = 7
 
-    print(lBinRes)
-    print(lBinBroad)
-    
     # --- --- --- Outputs --- --- --- #
     print("Number of IPs : " + nbIP)
     print("Number of usable IPs : " + nbUsable)
