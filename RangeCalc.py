@@ -77,36 +77,6 @@ while loop != "exit":
             vMask = True
             print("Warning : This is not a valid Mask or CIDR.")
 
-    # --- --- --- Nbr of IPs --- --- --- #
-    if check == False:
-        # sBinMask
-        sBinMask = ""
-        for i in range(3):
-            if lDecMask[i] != '0':
-                sBinMask = sBinMask + str("{0:b}".format(int(lDecMask[i])))
-                sBinMask = sBinMask + '.'
-            else:
-                sBinMask = sBinMask + "00000000"
-                sBinMask = sBinMask + '.'
-        if lDecMask[i+1] != '0':
-            sBinMask = sBinMask + str("{0:b}".format(int(lDecMask[i+1])))
-        else:
-            sBinMask = sBinMask + "00000000"
-
-        # lBinMask
-        iCIDR = 0
-        lBinMask = list(sBinMask)
-        for i in range(len(lBinMask)):
-            if lBinMask[i] == '1':
-                iCIDR = iCIDR + 1
-
-    # nbIP
-    nbIP = str(2**(32-iCIDR))
-    if nbIP == '1':
-        nbUsable = '1'
-    else:
-        nbUsable = str(2**(32-iCIDR) - 2)
-
     # --- --- --- Network Address --- --- --- #
     # sBinIP
     sBinIP = ""
@@ -133,26 +103,30 @@ while loop != "exit":
     else:
         sBinIP = sBinIP + "00000000"
 
+    # lBinIP
+    lBinIP = list(sBinIP)
+
     # lBinRes
     # lBinBroad
-    lDecIP = list(sBinIP)
     lBinRes = []
     lBinBroad = []
     if iCIDR > 24:
-        iCIDR = iCIDR + 3
+        aCIDR = iCIDR + 3
     elif iCIDR > 16:
-        iCIDR = iCIDR + 2
+        aCIDR = iCIDR + 2
     elif iCIDR > 8:
-        iCIDR = iCIDR + 1
+        aCIDR = iCIDR + 1
+    else:
+        aCIDR = iCIDR
 
     for i in range(35):
-        if lDecIP[i] == '.':
+        if lBinIP[i] == '.':
             lBinRes.append('.')
             lBinBroad.append('.')
         else:
-            if i < iCIDR and iCIDR != 0:
-                lBinRes.append(lDecIP[i])
-                lBinBroad.append(lDecIP[i])
+            if i < aCIDR and aCIDR != 0:
+                lBinRes.append(lBinIP[i])
+                lBinBroad.append(lBinIP[i])
             else:
                 lBinRes.append('0')
                 lBinBroad.append('1')
@@ -193,11 +167,51 @@ while loop != "exit":
             octet = 0
             p = 7
 
+    # --- --- --- Nbr of IPs --- --- --- #
+    if check == False:
+        # sBinMask
+        sBinMask = ""
+        for i in range(3):
+            if lDecMask[i] != '0':
+                sBinMask = sBinMask + str("{0:b}".format(int(lDecMask[i])))
+                sBinMask = sBinMask + '.'
+            else:
+                sBinMask = sBinMask + "00000000"
+                sBinMask = sBinMask + '.'
+        if lDecMask[i+1] != '0':
+            sBinMask = sBinMask + str("{0:b}".format(int(lDecMask[i+1])))
+        else:
+            sBinMask = sBinMask + "00000000"
+
+        # lBinMask
+        iCIDR = 0
+        lBinMask = list(sBinMask)
+        for i in range(len(lBinMask)):
+            if lBinMask[i] == '1':
+                iCIDR = iCIDR + 1
+    print(iCIDR)
+    # nbIP
+    nbIP = str(2**(32-iCIDR))
+    if nbIP == '1':
+        nbUsable = '1'
+    else:
+        nbUsable = str(2**(32-iCIDR) - 2)
+
+    # --- --- --- Nbr of SubNets --- --- --- #
+    # nbIP
+    nbSubNet = str(2**(32-iCIDR-2))
+    if nbSubNet < '1':
+        nbSubNet = '1'
+
     # --- --- --- Outputs --- --- --- #
-    print("Number of IPs : " + nbIP)
-    print("Number of usable IPs : " + nbUsable)
     print("Network Address : " + sDecRes)
     print("Broadcast Address : " + sDecBroad)
+    print("")
+    print("Number of IPs : " + nbIP)
+    print("Number of usable IPs : " + nbUsable)
+    print("")
+    print("Number of SubNets : " + nbSubNet)
+    print("")
     print("")
 
     # --- --- --- Exit or Continue --- --- --- #
