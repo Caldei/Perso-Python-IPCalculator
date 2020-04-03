@@ -78,10 +78,30 @@ while loop != "exit":
             iCIDR = iCIDR + 1
     sCIDR = "/" + str(iCIDR)
 
+    # --- --- --- Nbr of IPs --- --- --- #
+    # nbIP
+    nbIP = str(2**(32-iCIDR))
+    if nbIP == '1':
+        nbUsable = '1'
+    else:
+        nbUsable = str(2**(32-iCIDR) - 2)
+
+    # --- --- --- Nbr of SubNets --- --- --- #
+    # nbIP
+    nbSubNet = str(2**(32-iCIDR-2))
+    if nbSubNet < '1':
+        nbSubNet = '1'
+
     # --- --- --- Outputs --- --- --- #
     print("Wildcard Mask : " + sDecWMask)
     print("Binary Mask : " + sBinMask)
     print("CIDR : " + sCIDR)
+    print("")
+    print("Number of IPs : " + nbIP)
+    print("Number of usable IPs : " + nbUsable)
+    print("")
+    print("Number of SubNets : " + nbSubNet)
+    print("")
     print("")
 
     # --- --- --- Exit or Continue --- --- --- #
