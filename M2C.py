@@ -85,5 +85,5 @@ while loop != "exit":
     print("")
 
     # --- --- --- Exit or Continue --- --- --- #
-    loop = input("If you want to quit enter \"exit\" else press Enter : ")
+    loop = input("If you want to continue press Enter else enter \"exit\" : ")
     print()
