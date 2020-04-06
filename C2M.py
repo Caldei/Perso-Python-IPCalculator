@@ -88,9 +88,9 @@ while loop != "exit":
         nbSubNet = '1'
 
     # --- --- --- Outputs --- --- --- #
-    print("Binary Mask :  " + sBinMask)
     print("Decimal Mask : " + sDecMask)
     print("Wildcard Mask : " + sDecWMask)
+    print("Binary Mask :  " + sBinMask)
     print("")
     print("Number of IPs : " + nbIP)
     print("Number of usable IPs : " + nbUsable)

@@ -1,5 +1,5 @@
 """
-Content : Translator (Mask to CIDR)
+Content : Translator (Wildcard to Mask)
 Using : Python
 
 Author : Arthur
@@ -22,39 +22,41 @@ while loop != "exit":
     print("Welcome : This is Mask to CIDR convertor !")
 
     # --- --- --- Inputs --- --- --- #
-    # lDecMask
-    vMask = True
-    while vMask:
-        sDecMask = input("Enter a Mask : ")
+    # lDecWMask
+    vWMask = True
+    while vWMask:
+        sDecWMask = input("Enter a Wildcard Mask : ")
         print("")
-        if bool(re.match(IP_MASK_REGEX, sDecMask)):
-            lDecMask = sDecMask.split('.')
+        if bool(re.match(IP_MASK_REGEX, sDecWMask)):
+            lDecWMask = sDecWMask.split('.')
             check = False
             for i in range(4):
-                if lDecMask[i] != '255' and lDecMask[i] != '254' and lDecMask[i] != '252' and lDecMask[i] != '248' and lDecMask[i] != '240' and lDecMask[i] != '224' and lDecMask[i] != '192' and lDecMask[i] != '128' and lDecMask[i] != '0':
+                if lDecWMask[i] != '255' and lDecWMask[i] != '127' and lDecWMask[i] != '63' and lDecWMask[i] != '31' and lDecWMask[i] != '15' and lDecWMask[i] != '7' and lDecWMask[i] != '3' and lDecWMask[i] != '1' and lDecWMask[i] != '0':
                     check = True
-                    print("Warning : " + lDecMask[i] + " is not a valid byte.")
-                elif i != 3 and lDecMask[i] != '255' and lDecMask[i+1] != '0':
+                    print("Warning : " + lDecWMask[i] + " is not a valid byte.")
+                elif i != 3 and lDecWMask[i] != '0' and lDecWMask[i+1] != '255':
                     check = True
-                    print(
-                        "Warning : This is not a valid Mask all bits must be left contiguous.")
+                    print("Warning : This is not a valid Mask all bits must be right contiguous.")
             if check:
-                vMask = True
+                vWMask = True
             else:
-                vMask = False
+                vWMask = False
         else:
-            vMask = True
-            print("Warning : This is not a valid Mask.")
+            vWMask = True
+            print("Warning : This is not a valid WildCard Mask.")
 
-    # --- --- --- Wildcard Mask --- --- --- #
-    # sDecWMask
-    sDecWMask = ""
+    # --- --- --- Mask --- --- --- #
+    # sDecMask
+    sDecMask = ""
     for i in range(3):
-        sDecWMask = sDecWMask + str(255 - int(lDecMask[i]))
-        sDecWMask = sDecWMask + '.'
-    sDecWMask = sDecWMask + str(255 - int(lDecMask[i+1]))
+        sDecMask = sDecMask + str(255 - int(lDecWMask[i]))
+        sDecMask = sDecMask + '.'
+    sDecMask = sDecMask + str(255 - int(lDecWMask[i+1]))
 
     # --- --- --- Bianary Mask --- --- --- #
+    # lDecMask
+    lDecMask = sDecMask.split('.')
+
     # sBinMask
     sBinMask = ""
     for i in range(3):
@@ -94,7 +96,7 @@ while loop != "exit":
 
     # --- --- --- Outputs --- --- --- #
     print("CIDR : " + sCIDR)
-    print("Wildcard Mask : " + sDecWMask)
+    print("Mask : " + sDecMask)
     print("Binary Mask : " + sBinMask)
     print("")
     print("Number of IPs : " + nbIP)
