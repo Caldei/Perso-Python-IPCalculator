@@ -17,28 +17,25 @@ IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 CIDR_REGEX = r"^[0-9]{1,2}$"
 
 
-# TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-sDecIP = "250.168.0.0"
-sDecMask = "255.255.255.0"
-
 # --- --- --- Loop --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is SubNet Calculator !")
-    # --- --- --- Inputs --- --- --- #
+
+    # --- --- --- Input : IP --- --- --- #
     # lDecIP
     vIP = True
     while vIP:
-        #sDecIP = input("Enter an IP : ")
-        print("")
+        sDecIP = input("Enter your IP : ")
+        print()
         if bool(re.match(IP_MASK_REGEX, sDecIP)):
             lDecIP = sDecIP.split('.')
-            check = False
+            isNotMask = False
             for i in range(4):
                 if int(lDecIP[i]) < 0 or int(lDecIP[i]) > 255:
-                    check = True
+                    isNotMask = True
                     print("Warning : " + lDecIP[i] + " is not a valid byte.")
-            if check:
+            if isNotMask:
                 vIP = True
             else:
                 vIP = False
@@ -46,78 +43,147 @@ while loop != "exit":
             vIP = True
             print("Warning : This is not a valid IP.")
 
+    # --- --- --- Input : Mask or CIDR --- --- --- #
+    # lDecMask
+    vMask = True
+    while vMask:
+        sMask = input("Enter your Mask or CIDR (without the \'/\') : ")
+        print()
+        if bool(re.match(IP_MASK_REGEX, sMask)):
+            isNotMask = False
+            lDecMask = sMask.split('.')
+            for i in range(4):
+                if lDecMask[i] != '255' and lDecMask[i] != '254' and lDecMask[i] != '252' and lDecMask[i] != '248' and lDecMask[i] != '240' and lDecMask[i] != '224' and lDecMask[i] != '192' and lDecMask[i] != '128' and lDecMask[i] != '0':
+                    isNotMask = True
+                    print("Warning : " + lDecMask[i] + " is not a valid byte.")
+                elif i != 3 and lDecMask[i] != '255' and lDecMask[i+1] != '0':
+                    isNotMask = True
+                    print(
+                        "Warning : This is not a valid Mask all bits must be left contiguous.")
+            if isNotMask:
+                vMask = True
+            else:
+                vMask = False
+
+        elif bool(re.match(CIDR_REGEX, sMask)):
+            isNotMask = True
+            try:
+                bCIDR = int(sMask)
+            except:
+                bCIDR = -1
+            if bCIDR < 0 or bCIDR > 32:
+                vMask = True
+                print("Warning : CIDR must be a number between 0 and 32.")
+            else:
+                vMask = False
+        else:
+            vMask = True
+            print("Warning : This is not a valid Mask or CIDR.")
+
+    # --- --- --- CIDR if Input is Mask --- --- --- #
+    if isNotMask == False:
+        # sBinMask
+        sBinMask = ""
+        for i in range(3):
+            if lDecMask[i] != '0':
+                sBinMask = sBinMask + str("{0:b}".format(int(lDecMask[i])))
+                sBinMask = sBinMask + '.'
+            else:
+                sBinMask = sBinMask + "00000000"
+                sBinMask = sBinMask + '.'
+        if lDecMask[i+1] != '0':
+            sBinMask = sBinMask + str("{0:b}".format(int(lDecMask[i+1])))
+        else:
+            sBinMask = sBinMask + "00000000"
+
+        # bBinMask
+        # bCIDR
+        bBinMask = list(sBinMask)
+        bCIDR = 0
+        for i in range(len(bBinMask)):
+            if bBinMask[i] == '1':
+                bCIDR = bCIDR + 1
+
+    # --- --- --- Nbr Max of IPs --- --- --- #
+    # nbMaxIp
+    nbMaxIp = str(2**(32-bCIDR))
+    if nbMaxIp == '1':
+        nbMaxUsable = '1'
+    else:
+        nbMaxUsable = str(2**(32-bCIDR) - 2)
+
+    # --- --- --- Nbr Max of SubNets --- --- --- #
+    # nbMaxSubNet
+    nbMaxSubNet = str(2**(32-bCIDR-2))
+    if nbMaxSubNet < '1':
+        nbMaxSubNet = '1'
+
+    # --- --- --- Input : Nbr of SubNets --- --- --- #
     # nbSubNets
     vSubNets = True
     while vSubNets:
-        nbSubNets = input("Enter the number of SubNets needed (max 10): ")
-        print("")
+        nbSubNets = input(
+            "Enter the number of SubNets you need (max " + nbMaxSubNet + "): ")
+        print()
         try:
             nbSubNets = int(nbSubNets)
         except:
             nbSubNets = -1
-        if nbSubNets <= 0 or nbSubNets > 10:
+        if nbSubNets <= 0 or nbSubNets > int(nbMaxSubNet):
             vSubNets = True
-            print("Warning : You entered an invalid number (you have to enter a number between > 0 and <= 10).")   
+            print("Warning : You entered an invalid number (you have to enter a number > 0 and <= " + nbMaxSubNet + ").")
         else:
             vSubNets = False
-    
+
+    # --- --- --- Input : Nbr of Users per SubNet --- --- --- #
+    if vSubNets == 1:
+        nbUsers = input(
+            "Enter the number of users you need for your SubNet (max " + nbMaxUsable + " users) : ")
+    else:
+        print("Enter the number of users in descending order for your " +
+              str(nbSubNets) + " SubNets.")
+
     # nbUsers
-    vUsers = True
-    while vUsers:
-        if vSubNets == 1:
-            nbUsers = input("Enter the number of users you need for your SubNet : ")
-        else :
-            nbUsers = input("Enter the number of users (in descending order) for your " + str(nbSubNets) + " SubNets (ex : 300 200 100) : ")
-        print("")
-
-        nbUsers = nbUsers.split(' ')
-        if len(nbUsers) > nbSubNets:
-            vUsers = True
-            print("Warning : You entered more than " + str(nbSubNets) + " SubNets.")
-        elif len(nbUsers) < nbSubNets:
-            vUsers = True
-            print("Warning : You entered less than " + str(nbSubNets) + " SubNets.")
-        else:
-            vUsers = False
-
-        if vUsers == False:
-            check = False
-            for i in range(nbSubNets):
-                try:
-                    nbUsers[i] = int(nbUsers[i])
-                except:
-                    nbUsers[i] = -1
-                if nbUsers[i] <= 0 or nbUsers[i] > 4294967294:
-                    check = True
-                    print("Warning : You entered an invalid number (you have to enter numbers between > 0 and <= 4294967294).") 
-                if i != 0 and nbUsers[i] > nbUsers[i-1]:
-                    check = True
-                    print("Warning : You must enter the number of users in descending order.")
-            if check:
-                vUsers = True
-            else:
-                vUsers = False
-
-
-
-    # --- --- --- Subnets Loop --- --- --- #
+    nbUsers = []
+    nbAvailableIP = nbMaxUsable
+    # --- --- --- Loop Subnets Creation --- --- --- #
     for nbSubNet in range(nbSubNets):
+        vNbUsers = True
+        while vNbUsers:
+            users = input("Enter the number of users you need for SubNet " +
+                          str(nbSubNet + 1) + " (" + nbAvailableIP + " IPs availabes): ")
+            print()
+            try:
+                users = int(users)
+                vNbUsers = False
+            except:
+                users = -1
+            if users <= 0 or users > int(nbAvailableIP):
+                vNbUsers = True
+                print(
+                    "Warning : You entered an invalid number (you have to enter numbers between > 0 and <= " + nbAvailableIP + ").")
+            elif nbSubNet != 0 and users > nbUsers[nbSubNet-1]:
+                vNbUsers = True
+                print(
+                    "Warning : You must enter numbers of users in descending order (last was " + str(nbUsers[nbSubNet-1]) + " users).")
+            else:
+                nbUsers.append(users)
 
-        # --- --- --- CIDR --- --- --- #
+        # --- --- --- Subnet : CIDR --- --- --- #
         # iCIDR
         iCIDR = 32
-        while (2**(32-iCIDR) - 2) <= int(nbUsers[nbSubNet]):
+        while (2**(32-iCIDR) - 2) < int(nbUsers[nbSubNet]):
             iCIDR = iCIDR - 1
 
-        # --- --- --- Nbr of IPs --- --- --- #
-        # nbIP
-        nbIP = str(2**(32-iCIDR))
-        if nbIP == '1':
+        # --- --- --- Subnet : Nbr of IPs --- --- --- #
+        # nbMaxIp
+        nbMaxIp = str(2**(32-iCIDR))
+        if nbMaxIp == '1':
             nbUsable = '1'
         else:
             nbUsable = str(2**(32-iCIDR) - 2)
 
-        # --- --- --- Mask --- --- --- #
+        # --- --- --- Subnet : Mask --- --- --- #
         # lBinMask
         lBinMask = []
         for i in range(32):
@@ -129,7 +195,7 @@ while loop != "exit":
                 if i % 8 == 0 and i != 0:
                     lBinMask.append('.')
                 lBinMask.append('0')
-        
+
         # sDecMask
         sDecMask = ""
         octet = 0
@@ -152,7 +218,7 @@ while loop != "exit":
                 wOctet = 0
                 p = 7
 
-        # --- --- --- Network Address --- --- --- #
+        # --- --- --- Subnet : Network and Broadcast Address --- --- --- #
         # sBinIP
         sBinIP = ""
         for i in range(3):
@@ -242,40 +308,29 @@ while loop != "exit":
                 octet = 0
                 p = 7
 
-        
-        # --- --- --- Check Nbr IPs Available --- --- --- # 
-        # lDecRes
-        # lDecBroad
-        lDecRes = sDecRes.split('.')
-        lDecBroad = sDecBroad.split('.')
-
-        if lDecRes != lDecIP:
-            print("Error : There isn't enough IPs ! Please reduce your numbers of users.")
-            break
-
-        # checkNbIp
-        checkNbIp = 1
-        for i in range(4):
-            if int(lDecBroad[i]) - int(lDecRes[i]) != 0:
-                checkNbIp = checkNbIp * (int(int(lDecBroad[i]) - int(lDecRes[i])) + 1)
-        if int(nbIP) != checkNbIp:
-            print("Error : There isn't enough IPs ! Please reduce your numbers of users.")
-            break
-
-
-        # --- --- --- Outputs --- --- --- #
-        print("--- --- --- Network " + str(nbSubNet + 1) + " --- --- ---")
+        # --- --- --- Subnet : Outputs --- --- --- #
+        print("--- --- --- SubNet " + str(nbSubNet + 1) + " --- --- ---")
         print("Network Address : " + sDecRes)
         print("Broadcast Address : " + sDecBroad)
         print("Mask : " + sDecMask)
         print("CIDR : /" + str(iCIDR))
-        print("")
-        print("Number of IPs : " + nbIP)
+        print()
+        print("Number of IPs : " + nbMaxIp)
         print("Number of usable IPs : " + nbUsable)
-        print("")
-        print("")
+        print()
+        print()
 
         # --- --- --- Update --- --- --- #
+        # nbUsedIP
+        nbUsedIP = str(2**(32-iCIDR))
+        nbAvailableIP = str(int(nbAvailableIP) + 2 - int(nbUsedIP))
+        if int(nbAvailableIP) <= 0 and nbSubNets - (nbSubNet + 1) > 0:
+            print("You used all available IPs. You can't create your " +
+                  str(nbSubNets - (nbSubNet + 1)) + " SubNets remaining.")
+            print("Please try with others parameters.")
+            print()
+            break
+
         # lDecIP
         lDecIP = sDecBroad.split('.')
         lDecIP[3] = str(int(lDecIP[3]) + 1)
@@ -288,10 +343,10 @@ while loop != "exit":
                 if int(lDecIP[1]) > 255:
                     lDecIP[0] = str(int(lDecIP[0]) + 1)
                     lDecIP[1] = '0'
-                    if int(lDecIP[0]) > 255: # DELETE ?
-                        print("Error : There isn't enough IPs ! Please reduce your numbers of users.")
+                    if int(lDecIP[0]) > 255:
+                        print(
+                            "Error : It's seems that there is a problem. Please report it on the Github.")
                         break
-
 
     # --- --- --- Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
