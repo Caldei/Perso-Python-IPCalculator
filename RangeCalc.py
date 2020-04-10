@@ -19,12 +19,12 @@ loop = ""
 while loop != "exit":
     print("Welcome : This is IP Range Calculator !")
 
-    # --- --- --- Inputs --- --- --- #
+    # --- --- --- Input : IP --- --- --- #
     # lDecIP
     vIP = True
     while vIP:
         sDecIP = input("Enter an IP : ")
-        print("")
+        print()
         if bool(re.match(IP_MASK_REGEX, sDecIP)):
             lDecIP = sDecIP.split('.')
             isNotMask = False
@@ -40,11 +40,12 @@ while loop != "exit":
             vIP = True
             print("Warning : This is not a valid IP.")
 
+    # --- --- --- Input : Mask or CIDR --- --- --- #
     # lDecMask
     vMask = True
     while vMask:
         sMask = input("Enter a Mask or a CIDR (without the \'/\') : ")
-        print("")
+        print()
         if bool(re.match(IP_MASK_REGEX, sMask)):
             isNotMask = False
             lDecMask = sMask.split('.')
@@ -77,7 +78,7 @@ while loop != "exit":
             vMask = True
             print("Warning : This is not a valid Mask or CIDR.")
 
-    # --- --- --- CIDR --- --- --- #
+    # --- --- --- CIDR if not Mask --- --- --- #
     if isNotMask == False:
         # sBinMask
         sBinMask = ""
@@ -101,7 +102,15 @@ while loop != "exit":
             if lBinMask[i] == '1':
                 iCIDR = iCIDR + 1
 
-    # --- --- --- Network Address --- --- --- #
+    # --- --- --- Nbr of IPs --- --- --- #
+    # nbIP
+    nbIP = str(2**(32-iCIDR))
+    if nbIP == '1':
+        nbUsable = '1'
+    else:
+        nbUsable = str(2**(32-iCIDR) - 2)
+
+    # --- --- --- Network and Broadcast Address --- --- --- #
     # sBinIP
     sBinIP = ""
     for i in range(3):
@@ -191,30 +200,14 @@ while loop != "exit":
             octet = 0
             p = 7
 
-    # --- --- --- Nbr of IPs --- --- --- #
-    # nbIP
-    nbIP = str(2**(32-iCIDR))
-    if nbIP == '1':
-        nbUsable = '1'
-    else:
-        nbUsable = str(2**(32-iCIDR) - 2)
-
-    # --- --- --- Nbr of SubNets --- --- --- #
-    # nbSubNets
-    nbSubNet = str(2**(32-iCIDR-2))
-    if nbSubNet < '1':
-        nbSubNet = '1'
-
     # --- --- --- Outputs --- --- --- #
     print("Network Address : " + sDecRes)
     print("Broadcast Address : " + sDecBroad)
-    print("")
+    print()
     print("Number of IPs : " + nbIP)
     print("Number of usable IPs : " + nbUsable)
-    print("")
-    print("Number of SubNets : " + nbSubNet)
-    print("")
-    print("")
+    print()
+    print()
 
     # --- --- --- Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")

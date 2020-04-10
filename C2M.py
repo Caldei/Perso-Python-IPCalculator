@@ -13,12 +13,12 @@ loop = ""
 while loop != "exit":
     print("Welcome : This is CIDR to Mask convertor !")
 
-    # --- --- --- Inputs --- --- --- #
+    # --- --- --- Input : CIDR --- --- --- #
     # iCIDR
     vCIDR = True
     while vCIDR:
         sCIDR = input("Enter a CIDR (just the number): ")
-        print("")
+        print()
         try:
             iCIDR = int(sCIDR)
         except:
@@ -91,13 +91,13 @@ while loop != "exit":
     print("Decimal Mask : " + sDecMask)
     print("Wildcard Mask : " + sDecWMask)
     print("Binary Mask :  " + sBinMask)
-    print("")
+    print()
     print("Number of IPs : " + nbIP)
     print("Number of usable IPs : " + nbUsable)
-    print("")
+    print()
     print("Number of SubNets : " + nbSubNet)
-    print("")
-    print("")
+    print()
+    print()
 
     # --- --- --- Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")

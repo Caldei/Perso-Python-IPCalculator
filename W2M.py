@@ -19,24 +19,26 @@ IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 # --- --- --- Loop --- --- --- #
 loop = ""
 while loop != "exit":
-    print("Welcome : This is Mask to CIDR convertor !")
+    print("Welcome : This is Wildcard Mask to Mask convertor !")
 
-    # --- --- --- Inputs --- --- --- #
+    # --- --- --- Input : Wildcard Mask --- --- --- #
     # lDecWMask
     vWMask = True
     while vWMask:
         sDecWMask = input("Enter a Wildcard Mask : ")
-        print("")
+        print()
         if bool(re.match(IP_MASK_REGEX, sDecWMask)):
             lDecWMask = sDecWMask.split('.')
             check = False
             for i in range(4):
                 if lDecWMask[i] != '255' and lDecWMask[i] != '127' and lDecWMask[i] != '63' and lDecWMask[i] != '31' and lDecWMask[i] != '15' and lDecWMask[i] != '7' and lDecWMask[i] != '3' and lDecWMask[i] != '1' and lDecWMask[i] != '0':
                     check = True
-                    print("Warning : " + lDecWMask[i] + " is not a valid byte.")
+                    print("Warning : " +
+                          lDecWMask[i] + " is not a valid byte.")
                 elif i != 3 and lDecWMask[i] != '0' and lDecWMask[i+1] != '255':
                     check = True
-                    print("Warning : This is not a valid Mask all bits must be right contiguous.")
+                    print(
+                        "Warning : This is not a valid Mask all bits must be right contiguous.")
             if check:
                 vWMask = True
             else:
@@ -98,13 +100,13 @@ while loop != "exit":
     print("CIDR : " + sCIDR)
     print("Mask : " + sDecMask)
     print("Binary Mask : " + sBinMask)
-    print("")
+    print()
     print("Number of IPs : " + nbIP)
     print("Number of usable IPs : " + nbUsable)
-    print("")
+    print()
     print("Number of SubNets : " + nbSubNet)
-    print("")
-    print("")
+    print()
+    print()
 
     # --- --- --- Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
