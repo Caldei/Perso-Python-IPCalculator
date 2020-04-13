@@ -143,9 +143,16 @@ while loop != "exit":
         print("Enter the number of users in descending order for your " +
               str(nbSubNets) + " SubNets.")
 
-    # nbUsers
+    # --- --- --- Variables Initialization  --- --- --- #
+    oDecRes = []
+    oDecBroad = []
+    oDecMask = []
+    oCIDR = []
+    oNbMaxIp = []
+    oNbUsable = []
     nbUsers = []
     nbAvailableIP = nbMaxUsable
+
     # --- --- --- Loop Subnets Creation --- --- --- #
     for nbSubNet in range(nbSubNets):
         vNbUsers = True
@@ -308,28 +315,31 @@ while loop != "exit":
                 octet = 0
                 p = 7
 
-        # --- --- --- Subnet : Outputs --- --- --- #
-        print("--- --- --- SubNet " + str(nbSubNet + 1) + " --- --- ---")
-        print("Network Address : " + sDecRes)
-        print("Broadcast Address : " + sDecBroad)
-        print("Mask : " + sDecMask)
-        print("CIDR : /" + str(iCIDR))
-        print()
-        print("Number of IPs : " + nbMaxIp)
-        print("Number of usable IPs : " + nbUsable)
-        print()
-        print()
+        # --- --- --- Subnet : Save for Output --- --- --- #
+        oDecRes.append(sDecRes)
+        oDecBroad.append(sDecBroad)
+        oDecMask.append(sDecMask)
+        oCIDR.append(iCIDR)
+        oNbMaxIp.append(nbMaxIp)
+        oNbUsable.append(nbUsable)
 
         # --- --- --- Update --- --- --- #
         # nbUsedIP
         nbUsedIP = str(2**(32-iCIDR))
         nbAvailableIP = str(int(nbAvailableIP) + 2 - int(nbUsedIP))
-        if int(nbAvailableIP) <= 0 and nbSubNets - (nbSubNet + 1) > 0:
-            print("You used all available IPs. You can't create your " +
-                  str(nbSubNets - (nbSubNet + 1)) + " SubNets remaining.")
-            print("Please try with others parameters.")
+        if int(nbAvailableIP) <= 0 and nbSubNets - (nbSubNet + 1) == 1:
+            print("Warning : You used all available IPs. You can't create your " +
+                  str(nbSubNets - (nbSubNet + 1)) + " SubNet remaining.")
+            print("If you want to create it, please try with others parameters.")
             print()
             break
+        elif int(nbAvailableIP) <= 0 and nbSubNets - (nbSubNet + 1) > 1:
+            print("Warning : You used all available IPs. You can't create your " +
+                  str(nbSubNets - (nbSubNet + 1)) + " SubNets remaining.")
+            print("If you want to create them, please try with others parameters.")
+            print()
+            break
+            
 
         # lDecIP
         lDecIP = sDecBroad.split('.')
@@ -347,6 +357,19 @@ while loop != "exit":
                         print(
                             "Error : It's seems that there is a problem. Please report it on the Github.")
                         break
+    
+    # --- --- --- Subnet : Outputs --- --- --- #
+    for nbSubNet in range (len(oDecRes)):
+        print("--- --- --- SubNet " + str(nbSubNet + 1) + " --- --- ---")
+        print("Network Address : " + oDecRes[nbSubNet])
+        print("Broadcast Address : " + oDecBroad[nbSubNet])
+        print("Mask : " + oDecMask[nbSubNet])
+        print("CIDR : /" + str(oCIDR[nbSubNet]))
+        print()
+        print("Number of IPs : " + oNbMaxIp[nbSubNet])
+        print("Number of usable IPs : " + oNbUsable[nbSubNet])
+        print()
+        print()
 
     # --- --- --- Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
