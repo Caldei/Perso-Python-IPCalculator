@@ -10,17 +10,19 @@ Context : Personal
 # --- --- --- Imports --- --- --- #
 import re
 
+
 # --- --- --- Constant --- --- --- #
 IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 CIDR_REGEX = r"^[0-9]{1,2}$"
 
-# --- --- --- Loop --- --- --- #
+
+# --- --- --- Program Loop : Start --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is IP Range Calculator !")
 
     # --- --- --- Input : IP --- --- --- #
-    # lDecIP
+    # input -> Verification then Decimal IP List -> lDecIP
     vIP = True
     while vIP:
         sDecIP = input("Enter an IP : ")
@@ -41,7 +43,7 @@ while loop != "exit":
             print("Warning : This is not a valid IP.")
 
     # --- --- --- Input : Mask or CIDR --- --- --- #
-    # lDecMask
+    # input -> Verification then Decimal Mask or CIDR -> lDecMask or iCIDR
     vMask = True
     while vMask:
         sMask = input("Enter a Mask or a CIDR (without the \'/\') : ")
@@ -73,14 +75,13 @@ while loop != "exit":
                 print("Warning : CIDR must be a number between 0 and 32.")
             else:
                 vMask = False
-
         else:
             vMask = True
             print("Warning : This is not a valid Mask or CIDR.")
 
-    # --- --- --- CIDR if not Mask --- --- --- #
+    # --- --- --- Calculation : CIDR (if lDecMask) --- --- --- #
     if isNotMask == False:
-        # sBinMask
+        # lDecMask -> Decimal Mask List to Binary Mask String -> sBinMask
         sBinMask = ""
         for i in range(3):
             if lDecMask[i] != '0':
@@ -94,24 +95,27 @@ while loop != "exit":
         else:
             sBinMask = sBinMask + "00000000"
 
-        # lBinMask
-        # iCIDR
-        iCIDR = 0
+        # sBinMask -> Binary Mask String to Binary Mask List -> lBinMask
         lBinMask = list(sBinMask)
+
+        # lBinMask -> Binary Mask List to CIDR Integer -> iCIDR
+        iCIDR = 0
         for i in range(len(lBinMask)):
             if lBinMask[i] == '1':
                 iCIDR = iCIDR + 1
 
-    # --- --- --- Nbr of IPs --- --- --- #
-    # nbIP
+    # --- --- --- Calculation : Nbr of IPs --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of IPs String -> nbIP
     nbIP = str(2**(32-iCIDR))
-    if nbIP == '1':
-        nbUsable = '1'
-    else:
-        nbUsable = str(2**(32-iCIDR) - 2)
 
-    # --- --- --- Network and Broadcast Address --- --- --- #
-    # sBinIP
+    # --- --- --- Calculation : Nbr of usable IPs --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of usable IPs String -> nbUsableIP
+    nbUsableIP = str(2**(32-iCIDR) - 2)
+    if nbUsableIP < '1':
+        nbUsableIP = '1'
+
+    # --- --- --- Calculation : Network and Broadcast Address --- --- --- #
+    # lDecIP -> Decimal IP List to Binary IP String -> sBinIP
     sBinIP = ""
     for i in range(3):
         if lDecIP[i] != '0':
@@ -136,12 +140,12 @@ while loop != "exit":
     else:
         sBinIP = sBinIP + "00000000"
 
-    # lBinIP
+    # sBinIP -> Binary IP String to Binary IP List -> lBinIP
     lBinIP = list(sBinIP)
 
-    # lBinRes
-    # lBinBroad
-    lBinRes = []
+    # lBinIP + iCIDR -> Binary IP List + CIDR to Binary Network Address List -> lBinNet
+    # lBinIP + iCIDR -> Binary IP List + CIDR to Binary Broadcast Address List -> lBinBroad
+    lBinNet = []
     lBinBroad = []
     if iCIDR > 24:
         aCIDR = iCIDR + 3
@@ -154,35 +158,35 @@ while loop != "exit":
 
     for i in range(35):
         if lBinIP[i] == '.':
-            lBinRes.append('.')
+            lBinNet.append('.')
             lBinBroad.append('.')
         else:
             if i < aCIDR and aCIDR != 0:
-                lBinRes.append(lBinIP[i])
+                lBinNet.append(lBinIP[i])
                 lBinBroad.append(lBinIP[i])
             else:
-                lBinRes.append('0')
+                lBinNet.append('0')
                 lBinBroad.append('1')
 
-    # sDecRes
-    sDecRes = ""
+    # lBinNet -> Binary Network Address List to Decimal Network Address String -> sDecNet
+    sDecNet = ""
     octet = 0
     p = 7
     for i in range(35):
-        if lBinRes[i] == '1':
+        if lBinNet[i] == '1':
             octet = octet + 2**p
             p = p - 1
-        elif lBinRes[i] == '0':
+        elif lBinNet[i] == '0':
             octet = octet + 0
             p = p - 1
-        elif lBinRes[i] == '.':
-            sDecRes = sDecRes + '.'
+        elif lBinNet[i] == '.':
+            sDecNet = sDecNet + '.'
         if p < 0:
-            sDecRes = sDecRes + str(octet)
+            sDecNet = sDecNet + str(octet)
             octet = 0
             p = 7
 
-    # sDecBroad
+    # lBinBroad -> Binary Broadcast Address List to Decimal Broadcast Address String -> sDecBroad
     sDecBroad = ""
     octet = 0
     p = 7
@@ -191,7 +195,6 @@ while loop != "exit":
             octet = octet + 2**p
             p = p - 1
         elif lBinBroad[i] == '0':
-            octet = octet + 0
             p = p - 1
         elif lBinBroad[i] == '.':
             sDecBroad = sDecBroad + '.'
@@ -200,15 +203,15 @@ while loop != "exit":
             octet = 0
             p = 7
 
-    # --- --- --- Outputs --- --- --- #
-    print("Network Address : " + sDecRes)
+    # --- --- --- Program Loop : Outputs --- --- --- #
+    print("Network Address : " + sDecNet)
     print("Broadcast Address : " + sDecBroad)
     print()
     print("Number of IPs : " + nbIP)
-    print("Number of usable IPs : " + nbUsable)
+    print("Number of usable IPs : " + nbUsableIP)
     print()
     print()
 
-    # --- --- --- Exit or Continue --- --- --- #
+    # --- --- --- Program Loop : Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
     print()

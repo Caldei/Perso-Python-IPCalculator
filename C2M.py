@@ -1,5 +1,5 @@
 """
-Content : Translator (CIDR to Mask)
+Content : Translator (CIDR to Mask and Wildcard Mask)
 Using : Python
 
 Author : Arthur
@@ -8,16 +8,16 @@ Context : Personal
 """
 
 
-# --- --- --- Loop --- --- --- #
+# --- --- --- Program Loop : Start --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is CIDR to Mask convertor !")
 
     # --- --- --- Input : CIDR --- --- --- #
-    # iCIDR
+    # Input -> Verification then CIDR Integer -> iCIDR
     vCIDR = True
     while vCIDR:
-        sCIDR = input("Enter a CIDR (just the number): ")
+        sCIDR = input("Enter a CIDR (just the number) : ")
         print()
         try:
             iCIDR = int(sCIDR)
@@ -29,8 +29,8 @@ while loop != "exit":
         else:
             vCIDR = False
 
-    # --- --- --- Mask and WildCard Mask --- --- --- #
-    # lBinMask
+    # --- --- --- Calculation : Mask and WildCard Mask --- --- --- #
+    # iCIDR -> CIDR Integer to Binary Mask List -> lBinMask
     lBinMask = []
     for i in range(32):
         if i < iCIDR:
@@ -42,63 +42,61 @@ while loop != "exit":
                 lBinMask.append('.')
             lBinMask.append('0')
 
-    # sBinMask
-    sBinMask = ""
-    for i in range(35):
-        sBinMask = sBinMask + str(lBinMask[i])
+    # lBinMask -> List to String -> sBinMask
+    sBinMask = "".join(lBinMask)
 
-    # sDecMask
-    # sDecWMask
+    # lBinMask -> Binary Mask List to Decimal Mask String -> sDecMask
+    # lBinMask -> Binary Mask List to Decimal WildaCard Mask String -> sDecWMask
     sDecMask = ""
     sDecWMask = ""
-    octet = 0
+    mOctet = 0
     wOctet = 0
     p = 7
     for i in range(35):
         if lBinMask[i] == '1':
-            octet = octet + 2**p
-            wOctet = wOctet + 0
+            mOctet = mOctet + 2**p
             p = p - 1
         elif lBinMask[i] == '0':
-            octet = octet + 0
             wOctet = wOctet + 2**p
             p = p - 1
         else:
             sDecMask = sDecMask + '.'
             sDecWMask = sDecWMask + '.'
         if p < 0:
-            sDecMask = sDecMask + str(octet)
+            sDecMask = sDecMask + str(mOctet)
             sDecWMask = sDecWMask + str(wOctet)
-            octet = 0
+            mOctet = 0
             wOctet = 0
             p = 7
 
-    # --- --- --- Nbr of IPs --- --- --- #
-    # nbIP
+    # --- --- --- Calculation : Nbr of IPs --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of IPs String -> nbIP
     nbIP = str(2**(32-iCIDR))
-    if nbIP == '1':
-        nbUsable = '1'
-    else:
-        nbUsable = str(2**(32-iCIDR) - 2)
 
-    # --- --- --- Nbr of SubNets --- --- --- #
-    # nbIP
+    # --- --- --- Calculation : Nbr of usable IPs --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of usable IPs String -> nbUsableIP
+    nbUsableIP = str(2**(32-iCIDR) - 2)
+    if nbUsableIP < '1':
+        nbUsableIP = '1'
+
+    # --- --- --- Calculation : Nbr of SubNets --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of SubNets String -> nbSubNet
     nbSubNet = str(2**(32-iCIDR-2))
     if nbSubNet < '1':
         nbSubNet = '1'
 
-    # --- --- --- Outputs --- --- --- #
+    # --- --- --- Program Loop : Outputs --- --- --- #
     print("Decimal Mask : " + sDecMask)
     print("Wildcard Mask : " + sDecWMask)
     print("Binary Mask :  " + sBinMask)
     print()
     print("Number of IPs : " + nbIP)
-    print("Number of usable IPs : " + nbUsable)
+    print("Number of usable IPs : " + nbUsableIP)
     print()
     print("Number of SubNets : " + nbSubNet)
     print()
     print()
 
-    # --- --- --- Exit or Continue --- --- --- #
+    # --- --- --- Program Loop : Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
     print()

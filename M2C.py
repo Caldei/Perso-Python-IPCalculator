@@ -1,5 +1,5 @@
 """
-Content : Translator (Mask to CIDR)
+Content : Translator (Mask to CIDR and Wildcard Mask)
 Using : Python
 
 Author : Arthur
@@ -16,13 +16,13 @@ import re
 IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 
-# --- --- --- Loop --- --- --- #
+# --- --- --- Program Loop : Start --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is Mask to CIDR convertor !")
 
     # --- --- --- Input : Mask --- --- --- #
-    # lDecMask
+    # Input -> Verification then Decimal Mask List -> lDecMask
     vMask = True
     while vMask:
         sDecMask = input("Enter a Mask : ")
@@ -46,16 +46,16 @@ while loop != "exit":
             vMask = True
             print("Warning : This is not a valid Mask.")
 
-    # --- --- --- Wildcard Mask --- --- --- #
-    # sDecWMask
+    # --- --- --- Calculation : WildCard --- --- --- #
+    # lDecMask -> Decimal Mask List to Decimal WildaCard Mask String -> sDecWMask
     sDecWMask = ""
     for i in range(3):
         sDecWMask = sDecWMask + str(255 - int(lDecMask[i]))
         sDecWMask = sDecWMask + '.'
     sDecWMask = sDecWMask + str(255 - int(lDecMask[i+1]))
 
-    # --- --- --- Bianary Mask --- --- --- #
-    # sBinMask
+    # --- --- --- Calculation : CIDR --- --- --- #
+    # lDecMask -> Decimal Mask List to Binary Mask String -> sBinMask
     sBinMask = ""
     for i in range(3):
         if lDecMask[i] != '0':
@@ -69,41 +69,46 @@ while loop != "exit":
     else:
         sBinMask = sBinMask + "00000000"
 
-    # --- --- --- CIDR --- --- --- #
-    # sCIDR
-    lDecMask = list(sBinMask)
+    # sBinMask -> Binary Mask String to Binary Mask List -> lBinMask
+    lBinMask = list(sBinMask)
+
+    # lBinMask -> Binary Mask List to CIDR Integer -> iCIDR
     iCIDR = 0
-    for i in range(len(lDecMask)):
-        if lDecMask[i] == '1':
+    for i in range(len(lBinMask)):
+        if lBinMask[i] == '1':
             iCIDR = iCIDR + 1
+
+    # iCIDR -> CIDR Integer to CIDR String -> sCIDR
     sCIDR = "/" + str(iCIDR)
 
-    # --- --- --- Nbr of IPs --- --- --- #
-    # nbIP
+    # --- --- --- Calculation : Nbr of IPs --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of IPs String -> nbIP
     nbIP = str(2**(32-iCIDR))
-    if nbIP == '1':
-        nbUsable = '1'
-    else:
-        nbUsable = str(2**(32-iCIDR) - 2)
 
-    # --- --- --- Nbr of SubNets --- --- --- #
-    # nbIP
+    # --- --- --- Calculation : Nbr of usable IPs --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of usable IPs String -> nbUsableIP
+    nbUsableIP = str(2**(32-iCIDR) - 2)
+    if nbUsableIP < '1':
+        nbUsableIP = '1'
+
+    # --- --- --- Calculation : Nbr of SubNets --- --- --- #
+    # iCIDR -> CIDR Integer to Nbr of SubNets String -> nbSubNet
     nbSubNet = str(2**(32-iCIDR-2))
     if nbSubNet < '1':
         nbSubNet = '1'
 
-    # --- --- --- Outputs --- --- --- #
+    # --- --- --- Program Loop : Outputs --- --- --- #
     print("CIDR : " + sCIDR)
     print("Wildcard Mask : " + sDecWMask)
     print("Binary Mask : " + sBinMask)
     print()
     print("Number of IPs : " + nbIP)
-    print("Number of usable IPs : " + nbUsable)
+    print("Number of usable IPs : " + nbUsableIP)
     print()
     print("Number of SubNets : " + nbSubNet)
     print()
     print()
 
-    # --- --- --- Exit or Continue --- --- --- #
+    # --- --- --- Program Loop : Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
     print()

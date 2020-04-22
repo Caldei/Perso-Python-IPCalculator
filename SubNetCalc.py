@@ -17,13 +17,13 @@ IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 CIDR_REGEX = r"^[0-9]{1,2}$"
 
 
-# --- --- --- Loop --- --- --- #
+# --- --- --- Program Loop : Start --- --- --- #
 loop = ""
 while loop != "exit":
     print("Welcome : This is SubNet Calculator !")
 
     # --- --- --- Input : IP --- --- --- #
-    # lDecIP
+    # input -> Verification then Decimal IP List -> lDecIP
     vIP = True
     while vIP:
         sDecIP = input("Enter your IP : ")
@@ -44,7 +44,7 @@ while loop != "exit":
             print("Warning : This is not a valid IP.")
 
     # --- --- --- Input : Mask or CIDR --- --- --- #
-    # lDecMask
+    # input -> Verification then Decimal Mask or CIDR -> lDecMask or bCIDR
     vMask = True
     while vMask:
         sMask = input("Enter your Mask or CIDR (without the \'/\') : ")
@@ -80,9 +80,9 @@ while loop != "exit":
             vMask = True
             print("Warning : This is not a valid Mask or CIDR.")
 
-    # --- --- --- CIDR if Input is Mask --- --- --- #
+    # --- --- --- Calculation : CIDR (if lDecMask) --- --- --- #
     if isNotMask == False:
-        # sBinMask
+        # lDecMask -> Decimal Mask List to Binary Mask String -> sBinMask
         sBinMask = ""
         for i in range(3):
             if lDecMask[i] != '0':
@@ -96,30 +96,29 @@ while loop != "exit":
         else:
             sBinMask = sBinMask + "00000000"
 
-        # bBinMask
-        # bCIDR
-        bBinMask = list(sBinMask)
-        bCIDR = 0
-        for i in range(len(bBinMask)):
-            if bBinMask[i] == '1':
-                bCIDR = bCIDR + 1
+        # sBinMask -> Binary Mask String to Binary Mask List -> lBinMask
+        lBinMask = list(sBinMask)
 
-    # --- --- --- Nbr Max of IPs --- --- --- #
-    # nbMaxIp
-    nbMaxIp = str(2**(32-bCIDR))
-    if nbMaxIp == '1':
-        nbMaxUsable = '1'
-    else:
-        nbMaxUsable = str(2**(32-bCIDR) - 2)
+        # lBinMask -> Binary Mask List to CIDR Integer -> bCIDR
+        iCIDR = 0
+        for i in range(len(lBinMask)):
+            if lBinMask[i] == '1':
+                iCIDR = iCIDR + 1
 
-    # --- --- --- Nbr Max of SubNets --- --- --- #
-    # nbMaxSubNet
+    # --- --- --- Calculation : Nbr of Available IPs --- --- --- #
+    # bCIDR -> CIDR Integer to Nbr of usable IPs String -> nbAvailableIP
+    nbAvailableIP = str(2**(32 - bCIDR) - 2)
+    if nbAvailableIP < '1':
+        nbAvailableIP = '1'
+
+    # --- --- --- Calculation : Nbr Max of SubNets --- --- --- #
+    # bCIDR -> CIDR Integer to Nbr of SubNets String -> nbMaxSubNet
     nbMaxSubNet = str(2**(32-bCIDR-2))
     if nbMaxSubNet < '1':
         nbMaxSubNet = '1'
 
     # --- --- --- Input : Nbr of SubNets --- --- --- #
-    # nbSubNets
+    # input -> Verification then Nbr of SubNets Integer -> nbSubNets
     vSubNets = True
     while vSubNets:
         nbSubNets = input(
@@ -136,62 +135,56 @@ while loop != "exit":
             vSubNets = False
 
     # --- --- --- Input : Nbr of Users per SubNet --- --- --- #
-    if vSubNets == 1:
-        nbUsers = input(
-            "Enter the number of users you need for your SubNet (max " + nbMaxUsable + " users) : ")
+    # input -> Verification then Nbr of Users per SubNet Integer -> nbUsers
+    if nbSubNets == 1:
+        print("Enter the number of users you need for your SubNet. ")
     else:
         print("Enter the number of users in descending order for your " +
               str(nbSubNets) + " SubNets.")
 
-    # --- --- --- Variables Initialization  --- --- --- #
-    oDecRes = []
-    oDecBroad = []
-    oDecMask = []
-    oCIDR = []
-    oNbMaxIp = []
-    oNbUsable = []
-    nbUsers = []
-    nbAvailableIP = nbMaxUsable
-
-    # --- --- --- Loop Subnets Creation --- --- --- #
+    # --- --- --- Subnet Loop : Start --- --- --- #
     for nbSubNet in range(nbSubNets):
+        # --- --- --- Input : Nbr of Users for the SubNet --- --- --- #
+        # input -> Verification then Nbr of Users -> nbUsers.append(users)
         vNbUsers = True
         while vNbUsers:
-            users = input("Enter the number of users you need for SubNet " +
-                          str(nbSubNet + 1) + " (" + nbAvailableIP + " IPs availabes): ")
+            nbUsers = input("Enter the number of users you need for SubNet " +
+                            str(nbSubNet + 1) + " (" + nbAvailableIP + " IPs availabes): ")
             print()
             try:
-                users = int(users)
+                nbUsers = int(nbUsers)
                 vNbUsers = False
             except:
-                users = -1
-            if users <= 0 or users > int(nbAvailableIP):
+                nbUsers = -1
+            if nbUsers <= 0 or nbUsers > int(nbAvailableIP):
                 vNbUsers = True
                 print(
                     "Warning : You entered an invalid number (you have to enter numbers between > 0 and <= " + nbAvailableIP + ").")
-            elif nbSubNet != 0 and users > nbUsers[nbSubNet-1]:
+            elif nbSubNet != 0 and nbUsers > lastBbUsers:
                 vNbUsers = True
                 print(
-                    "Warning : You must enter numbers of users in descending order (last was " + str(nbUsers[nbSubNet-1]) + " users).")
+                    "Warning : You must enter numbers of users in descending order (last was " + str(lastBbUsers) + " users).")
             else:
-                nbUsers.append(users)
+                lastBbUsers = nbUsers
 
-        # --- --- --- Subnet : CIDR --- --- --- #
-        # iCIDR
+        # --- --- --- Calculation : CIDR for the SubNet --- --- --- #
+        # nbUsers[nbSubNet] -> Nbr users needed to CIDR -> iCIDR
         iCIDR = 32
-        while (2**(32-iCIDR) - 2) < int(nbUsers[nbSubNet]):
+        while (2**(32-iCIDR) - 2) < int(nbUsers):
             iCIDR = iCIDR - 1
 
-        # --- --- --- Subnet : Nbr of IPs --- --- --- #
-        # nbMaxIp
-        nbMaxIp = str(2**(32-iCIDR))
-        if nbMaxIp == '1':
-            nbUsable = '1'
-        else:
-            nbUsable = str(2**(32-iCIDR) - 2)
+        # --- --- --- Calculation : Nbr of IPs for the SubNet --- --- --- #
+        # iCIDR -> CIDR Integer to Nbr of IPs String -> nbIP
+        nbIP = str(2**(32-iCIDR))
 
-        # --- --- --- Subnet : Mask --- --- --- #
-        # lBinMask
+        # --- --- --- Calculation : Nbr of usable IPs --- --- --- #
+        # iCIDR -> CIDR Integer to Nbr of usable IPs String -> nbUsableIP
+        nbUsableIP = str(2**(32-iCIDR) - 2)
+        if nbUsableIP < '1':
+            nbUsableIP = '1'
+
+        # --- --- --- Calculation : Mask --- --- --- #
+        # iCIDR -> CIDR Integer to Binary Mask List -> lBinMask
         lBinMask = []
         for i in range(32):
             if i < iCIDR:
@@ -203,30 +196,26 @@ while loop != "exit":
                     lBinMask.append('.')
                 lBinMask.append('0')
 
-        # sDecMask
+        # lBinMask -> Binary Mask List to Decimal Mask String -> sDecMask
         sDecMask = ""
         octet = 0
-        wOctet = 0
         p = 7
         for i in range(35):
             if lBinMask[i] == '1':
                 octet = octet + 2**p
-                wOctet = wOctet + 0
                 p = p - 1
             elif lBinMask[i] == '0':
                 octet = octet + 0
-                wOctet = wOctet + 2**p
                 p = p - 1
             else:
                 sDecMask = sDecMask + '.'
             if p < 0:
                 sDecMask = sDecMask + str(octet)
                 octet = 0
-                wOctet = 0
                 p = 7
 
-        # --- --- --- Subnet : Network and Broadcast Address --- --- --- #
-        # sBinIP
+        # --- --- --- Calculation : Network and Broadcast Address --- --- --- #
+        # lDecIP -> Decimal IP List to Binary IP String -> sBinIP
         sBinIP = ""
         for i in range(3):
             if lDecIP[i] != '0':
@@ -251,12 +240,12 @@ while loop != "exit":
         else:
             sBinIP = sBinIP + "00000000"
 
-        # lBinIP
+        # sBinIP -> Binary IP String to Binary IP List -> lBinIP
         lBinIP = list(sBinIP)
 
-        # lBinRes
-        # lBinBroad
-        lBinRes = []
+        # lBinIP + iCIDR -> Binary IP List + CIDR to Binary Network Address List -> lBinNet
+        # lBinIP + iCIDR -> Binary IP List + CIDR to Binary Broadcast Address List -> lBinBroad
+        lBinNet = []
         lBinBroad = []
         if iCIDR > 24:
             aCIDR = iCIDR + 3
@@ -269,35 +258,35 @@ while loop != "exit":
 
         for i in range(35):
             if lBinIP[i] == '.':
-                lBinRes.append('.')
+                lBinNet.append('.')
                 lBinBroad.append('.')
             else:
                 if i < aCIDR and aCIDR != 0:
-                    lBinRes.append(lBinIP[i])
+                    lBinNet.append(lBinIP[i])
                     lBinBroad.append(lBinIP[i])
                 else:
-                    lBinRes.append('0')
+                    lBinNet.append('0')
                     lBinBroad.append('1')
 
-        # sDecRes
-        sDecRes = ""
+        # lBinNet -> Binary Network Address List to Decimal Network Address String -> sDecNet
+        sDecNet = ""
         octet = 0
         p = 7
         for i in range(35):
-            if lBinRes[i] == '1':
+            if lBinNet[i] == '1':
                 octet = octet + 2**p
                 p = p - 1
-            elif lBinRes[i] == '0':
+            elif lBinNet[i] == '0':
                 octet = octet + 0
                 p = p - 1
-            elif lBinRes[i] == '.':
-                sDecRes = sDecRes + '.'
+            elif lBinNet[i] == '.':
+                sDecNet = sDecNet + '.'
             if p < 0:
-                sDecRes = sDecRes + str(octet)
+                sDecNet = sDecNet + str(octet)
                 octet = 0
                 p = 7
 
-        # sDecBroad
+        # lBinBroad -> Binary Broadcast Address List to Decimal Broadcast Address String -> sDecBroad
         sDecBroad = ""
         octet = 0
         p = 7
@@ -315,17 +304,23 @@ while loop != "exit":
                 octet = 0
                 p = 7
 
-        # --- --- --- Subnet : Save for Output --- --- --- #
-        oDecRes.append(sDecRes)
-        oDecBroad.append(sDecBroad)
-        oDecMask.append(sDecMask)
-        oCIDR.append(iCIDR)
-        oNbMaxIp.append(nbMaxIp)
-        oNbUsable.append(nbUsable)
+        # --- --- --- Subnet Loop : Outputs --- --- --- #
+        print("--- --- --- SubNet " + str(nbSubNet + 1) + " --- --- ---")
+        print("Network Address : " + sDecNet)
+        print("Broadcast Address : " + sDecBroad)
+        print("Mask : " + sDecMask)
+        print("CIDR : /" + str(iCIDR))
+        print()
+        print("Number of IPs : " + nbIP)
+        print("Number of usable IPs : " + nbUsableIP)
+        print()
+        print()
 
-        # --- --- --- Update --- --- --- #
-        # nbUsedIP
+        # --- --- --- Subnet Loop : Update  --- --- --- #
+        # iCIDR -> CIDR Integer to Nbr of IPs used Integer -> nbUsedIP
         nbUsedIP = str(2**(32-iCIDR))
+
+        # nbUsedIP + nbAvailableIP -> Update and Verification Nbr of Available IPs -> nbAvailableIP
         nbAvailableIP = str(int(nbAvailableIP) + 2 - int(nbUsedIP))
         if int(nbAvailableIP) <= 0 and nbSubNets - (nbSubNet + 1) == 1:
             print("Warning : You used all available IPs. You can't create your " +
@@ -339,9 +334,8 @@ while loop != "exit":
             print("If you want to create them, please try with others parameters.")
             print()
             break
-            
 
-        # lDecIP
+        # lDecIP -> Update and Verification next IP -> lDecIP
         lDecIP = sDecBroad.split('.')
         lDecIP[3] = str(int(lDecIP[3]) + 1)
         if int(lDecIP[3]) > 255:
@@ -355,22 +349,9 @@ while loop != "exit":
                     lDecIP[1] = '0'
                     if int(lDecIP[0]) > 255:
                         print(
-                            "Error : It's seems that there is a problem. Please report it on the Github.")
+                            "Error : It's seems that there is a problem. Please report it to Cytzen.")
                         break
-    
-    # --- --- --- Subnet : Outputs --- --- --- #
-    for nbSubNet in range (len(oDecRes)):
-        print("--- --- --- SubNet " + str(nbSubNet + 1) + " --- --- ---")
-        print("Network Address : " + oDecRes[nbSubNet])
-        print("Broadcast Address : " + oDecBroad[nbSubNet])
-        print("Mask : " + oDecMask[nbSubNet])
-        print("CIDR : /" + str(oCIDR[nbSubNet]))
-        print()
-        print("Number of IPs : " + oNbMaxIp[nbSubNet])
-        print("Number of usable IPs : " + oNbUsable[nbSubNet])
-        print()
-        print()
 
-    # --- --- --- Exit or Continue --- --- --- #
+    # --- --- --- Program Loop : Exit or Continue --- --- --- #
     loop = input("If you want to continue press Enter else enter \"exit\" : ")
     print()
