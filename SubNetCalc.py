@@ -143,6 +143,7 @@ while loop != "exit":
               str(nbSubNets) + " SubNets.")
 
     # --- --- --- Subnet Loop : Start --- --- --- #
+    lastBbUsers = 0
     for nbSubNet in range(nbSubNets):
         # --- --- --- Input : Nbr of Users for the SubNet --- --- --- #
         # input -> Verification then Nbr of Users -> nbUsers.append(users)
