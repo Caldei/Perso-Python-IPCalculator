@@ -59,6 +59,7 @@ These tools are:
 
 # 
 ## SubNetCalc :
+### Inputs : 
 * IP
 * Decimal Mask or CIDR
 * Number of Subnets needed
