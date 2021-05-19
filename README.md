@@ -1,73 +1,44 @@
-# IPCalculator
+<h1 align="center">🧮</br>IPCalculator</h1>
+<p align="center">
+  Python - Personal Project - 2020
+</p>
 
-## What is IPCalculator? 
-You will find several tools that will help you to address your Networks.   
 
-These tools are:
-* C2M : CIDR to Mask Convertor
-* M2C : Mask to CIDR Convertor
-* W2M : WildCard Mask to Mask Convertor
-* RangeCalc : Network Range Calculator
-* SubNetCalc : SubNets Calculator
+---
+## Overview
+### Project goal 
+Write python scripts to help with IP and SubNet calculations.
 
-# 
-## C2M :
-### Input : 
-* CIDR
-#### Outputs : 
-* Decimal Mask
-* Wildcard Mask
-* Binary Mask
-* Number of potential IPs with this mask
-* Number of potential usable IPs with this mask
-* Number of potential Subnets 
+### Tools List
+* **RangeCalc:** Network Range Calculator.
+* **SubNetCalc:** SubNets Calculator.
+* **C2M:** CIDR to Mask Convertor.
+* **M2C:** Mask to CIDR Convertor.
+* **W2M:** WildCard Mask to Mask Convertor.
 
-# 
-## M2C :
-### Input : 
-* Decimal Mask
-#### Outputs : 
-* CIDR
-* Wildcard Mask
-* Binary Mask
-* Number of potential IPs with this mask
-* Number of potential usable IPs with this mask
-* Number of potential Subnets 
+### Repo Content
+* **Calculators:** Calculators scripts (RangeCalc, SubNetCalc) and [Calculators Documentation](https://github.com/Caldei/PERSO-Python-IPCalculator/blob/master/Calculators/README.md). 
+* **Convertors:** Convertors scripts (C2M, M2C, W2M) and [Convertors Documentation](https://github.com/Caldei/PERSO-Python-IPCalculator/blob/master/Convertors/README.md).
 
-# 
-## W2C :
-### Input : 
-* Wildcard Mask
-#### Outputs : 
-* CIDR
-* Decimal Mask
-* Binary Mask
-* Number of potential IPs with this mask
-* Number of potential usable IPs with this mask
-* Number of potential Subnets 
 
-# 
-## RangeCalc :
-### Inputs : 
-* IP
-* Decimal Mask or CIDR
-#### Outputs : 
-* Network Address of the Subnet
-* Broadcast Address of the Subnet
-* Number of IPs in the Subnet
-* Number of usable IPs in the Subnet
+---
+## Get Started
+1. If you have git, you can clone the repo with this command (or you can directly download it as Zip):
+    ```sh
+    git clone https://github.com/Caldei/PERSO-Python-IPCalculator.git
+    ```
+2. Go to the folder you need (Calculators or Convertors):
+    ```sh
+    cd ./PERSO-Python-IPCalculator/Calculators
+    ```
+3. Launch the script you need (these scripts have been written for `python3`):
+    ```sh
+    python3 SubNetCalc.py
+    ```
 
-# 
-## SubNetCalc :
-### Inputs : 
-* IP
-* Decimal Mask or CIDR
-* Number of Subnets needed
-* Number of users needed per Subnet
-#### Outputs : 
-* Network Address (for each Subnets)
-* Broadcast Address (for each Subnets)
-* Mask (for each Subnets)
-* CIDR (for each Subnets)
-* Number of IPs (for each Subnets)
-* Number of usable IPs (for each Subnets)
+
+---
+## SubNetCalc Visual
+<p align="center">
+  <img src="https://i.ibb.co/d0bdhSk/Sub-Net-Calc-Visual.png" alt="SubNetCalc Visual" width="600">
+</p>

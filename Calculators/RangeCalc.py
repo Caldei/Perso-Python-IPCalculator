@@ -1,10 +1,10 @@
 """
-Content : IP Range Calculator
-Using : Python
+Content: IP Range Calculator
+Using: Python
 
-Author : Arthur
-Date : March 2020
-Context : Personal
+Author: Arthur
+Date: March 2020
+Context: Personal
 """
 
 # --- --- --- Imports --- --- --- #
@@ -16,16 +16,16 @@ IP_MASK_REGEX = r"^([0-9]{1,3}\.){3}[0-9]{1,3}$"
 CIDR_REGEX = r"^[0-9]{1,2}$"
 
 
-# --- --- --- Program Loop : Start --- --- --- #
+# --- --- --- Program Loop: Start --- --- --- #
 loop = ""
 while loop != "exit":
-    print("Welcome : This is IP Range Calculator !")
+    print("Welcome: This is IP Range Calculator!")
 
-    # --- --- --- Input : IP --- --- --- #
+    # --- --- --- Input: IP --- --- --- #
     # input -> Verification then Decimal IP List -> lDecIP
     vIP = True
     while vIP:
-        sDecIP = input("Enter an IP : ")
+        sDecIP = input("Enter an IP: ")
         print()
         if bool(re.match(IP_MASK_REGEX, sDecIP)):
             lDecIP = sDecIP.split('.')
@@ -33,20 +33,20 @@ while loop != "exit":
             for i in range(4):
                 if int(lDecIP[i]) < 0 or int(lDecIP[i]) > 255:
                     isNotMask = True
-                    print("Warning : " + lDecIP[i] + " is not a valid byte.")
+                    print("Warning: " + lDecIP[i] + " is not a valid byte.")
             if isNotMask:
                 vIP = True
             else:
                 vIP = False
         else:
             vIP = True
-            print("Warning : This is not a valid IP.")
+            print("Warning: This is not a valid IP.")
 
-    # --- --- --- Input : Mask or CIDR --- --- --- #
+    # --- --- --- Input: Mask or CIDR --- --- --- #
     # input -> Verification then Decimal Mask or CIDR -> lDecMask or iCIDR
     vMask = True
     while vMask:
-        sMask = input("Enter a Mask or a CIDR (without the \'/\') : ")
+        sMask = input("Enter a Mask or a CIDR (without the \'/\'): ")
         print()
         if bool(re.match(IP_MASK_REGEX, sMask)):
             isNotMask = False
@@ -54,11 +54,11 @@ while loop != "exit":
             for i in range(4):
                 if lDecMask[i] != '255' and lDecMask[i] != '254' and lDecMask[i] != '252' and lDecMask[i] != '248' and lDecMask[i] != '240' and lDecMask[i] != '224' and lDecMask[i] != '192' and lDecMask[i] != '128' and lDecMask[i] != '0':
                     isNotMask = True
-                    print("Warning : " + lDecMask[i] + " is not a valid byte.")
+                    print("Warning: " + lDecMask[i] + " is not a valid byte.")
                 elif i != 3 and lDecMask[i] != '255' and lDecMask[i+1] != '0':
                     isNotMask = True
                     print(
-                        "Warning : This is not a valid Mask all bits must be left contiguous.")
+                        "Warning: This is not a valid Mask all bits must be left contiguous.")
             if isNotMask:
                 vMask = True
             else:
@@ -72,14 +72,14 @@ while loop != "exit":
                 iCIDR = -1
             if iCIDR < 0 or iCIDR > 32:
                 vMask = True
-                print("Warning : CIDR must be a number between 0 and 32.")
+                print("Warning: CIDR must be a number between 0 and 32.")
             else:
                 vMask = False
         else:
             vMask = True
-            print("Warning : This is not a valid Mask or CIDR.")
+            print("Warning: This is not a valid Mask or CIDR.")
 
-    # --- --- --- Calculation : CIDR (if lDecMask) --- --- --- #
+    # --- --- --- Calculation: CIDR (if lDecMask) --- --- --- #
     if isNotMask == False:
         # lDecMask -> Decimal Mask List to Binary Mask String -> sBinMask
         sBinMask = ""
@@ -104,17 +104,17 @@ while loop != "exit":
             if lBinMask[i] == '1':
                 iCIDR = iCIDR + 1
 
-    # --- --- --- Calculation : Nbr of IPs --- --- --- #
+    # --- --- --- Calculation: Nbr of IPs --- --- --- #
     # iCIDR -> CIDR Integer to Nbr of IPs String -> nbIP
     nbIP = str(2**(32-iCIDR))
 
-    # --- --- --- Calculation : Nbr of usable IPs --- --- --- #
+    # --- --- --- Calculation: Nbr of usable IPs --- --- --- #
     # iCIDR -> CIDR Integer to Nbr of usable IPs String -> nbUsableIP
     nbUsableIP = str(2**(32-iCIDR) - 2)
     if nbUsableIP < '1':
         nbUsableIP = '1'
 
-    # --- --- --- Calculation : Network and Broadcast Address --- --- --- #
+    # --- --- --- Calculation: Network and Broadcast Address --- --- --- #
     # lDecIP -> Decimal IP List to Binary IP String -> sBinIP
     sBinIP = ""
     for i in range(3):
@@ -203,15 +203,15 @@ while loop != "exit":
             octet = 0
             p = 7
 
-    # --- --- --- Program Loop : Outputs --- --- --- #
-    print("Network Address : " + sDecNet)
-    print("Broadcast Address : " + sDecBroad)
+    # --- --- --- Program Loop: Outputs --- --- --- #
+    print("Network Address: " + sDecNet)
+    print("Broadcast Address: " + sDecBroad)
     print()
-    print("Number of IPs : " + nbIP)
-    print("Number of usable IPs : " + nbUsableIP)
+    print("Number of IPs: " + nbIP)
+    print("Number of usable IPs: " + nbUsableIP)
     print()
     print()
 
-    # --- --- --- Program Loop : Exit or Continue --- --- --- #
-    loop = input("If you want to continue press Enter else enter \"exit\" : ")
+    # --- --- --- Program Loop: Exit or Continue --- --- --- #
+    loop = input("If you want to continue press Enter else enter \"exit\": ")
     print()
